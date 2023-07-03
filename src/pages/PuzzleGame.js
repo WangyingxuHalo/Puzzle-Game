@@ -13,6 +13,7 @@ import image8 from '../static/8.png';
 import image9 from '../static/9.png';
 
 import { PuzzleGameConfig } from "../config/PuzzleGridConfig";
+import { getTop, getBottom, getLeft, getRight, onMouseDragStart, onMouseMove } from "../utils";
 
 const images = [
     image1, image2, image3, image4,
@@ -22,50 +23,6 @@ const images = [
 
 const spriteList = [];
 var globalPuzzleContainer;
-
-function onMouseDragStart(e) {
-    // 1. remember the position of the mouse cursor
-    this.touchPosition = { x: e.data.global.x, y: e.data.global.y }
-
-    // 2. set the dragging state for current sprite
-    this.dragging = true;
-    this.zIndex = 1;
-}
-
-function onMouseMove(e) {
-    if (!this.dragging) {
-        return;
-    }
-    // console.log("this: ", this);
-    // 1. get the coordinate of the cursor
-    const currPosition = { x: e.data.global.x, y: e.data.global.y };
-
-    // 2. calculate offset
-    const offsetX = currPosition.x - this.touchPosition.x;
-    const offsetY = currPosition.y - this.touchPosition.y;
-
-    // 3. apply the result to this sprite
-    const { x, y } = this.field;
-    const newX = x + offsetX;
-    const newY = y + offsetY;
-    this.position.set(newX, newY);
-}
-
-function getTop(center, height) {
-    return center - height / 2;
-}
-
-function getBottom(center, height) {
-    return center + height / 2;
-}
-
-function getLeft(center, width) {
-    return center - width / 2;
-}
-
-function getRight(center, width) {
-    return center + width / 2;
-}
 
 function onMouseDragEnd(e) {
     this.dragging = false;
@@ -91,9 +48,19 @@ function onMouseDragEnd(e) {
             localPosition.x <= getRight(currPositionX, width) &&
             localPosition.y >= getTop(currPositionY, height) &&
             localPosition.y <= getBottom(currPositionY, height)) {
-                console.log("to id: ", sprite.id);
                 foundProperPuzzle = true;
-                // TODO: exchange two puzzle
+                // exchange the fields of two puzzles
+                const replaceField = sprite.field;
+                sprite.field = this.field;
+                this.field = replaceField;
+
+                // exchange the id of two puzzles
+                const replaceId = sprite.id;
+                sprite.id = this.id;
+                this.id = replaceId;
+                // set position
+                this.position.set(this.field.x, this.field.y);
+                sprite.position.set(sprite.field.x, sprite.field.y);
         }
     }
     // If cannot find puzzle to exchange, put it back to original place
