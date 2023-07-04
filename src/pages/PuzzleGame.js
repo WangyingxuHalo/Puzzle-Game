@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js"
 import backgroundImage from "../static/sky.jpeg";
+import sound from "pixi-sound";
 
 import image1 from '../static/1.png';
 import image2 from '../static/2.png';
@@ -11,6 +12,7 @@ import image6 from '../static/6.png';
 import image7 from '../static/7.png';
 import image8 from '../static/8.png';
 import image9 from '../static/9.png';
+import clickSound from "../sound/click.mp3";
 
 import { PuzzleGameConfig } from "../config/PuzzleGridConfig";
 import { getTop, getBottom, getLeft, getRight, onMouseDragStart, onMouseMove } from "../utils";
@@ -68,6 +70,7 @@ function onMouseDragEnd(e) {
         this.position.set(this.field.x, this.field.y);
     }
 
+    e.stopPropagation();
 }
 
 const loadImage = (imageName) => {
@@ -88,6 +91,9 @@ const loadImage = (imageName) => {
 
 const attachAllImages = async (puzzleContainer) => {
     try {
+        // init sound object
+        sound.add('clickSound', clickSound);
+
         const imagePromises = images.map(image => loadImage(image));
         const textures = await Promise.all(imagePromises);
 
@@ -106,6 +112,7 @@ const attachAllImages = async (puzzleContainer) => {
             sprite.field = { x: originalX, y: originalY };
             sprite.position.set(originalX, originalY);
             sprite.anchor.set(0.5);
+            sprite.sound = sound;
 
             // set interactive property of sprite
             sprite.interactive = true;

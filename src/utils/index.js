@@ -21,6 +21,9 @@ export function onMouseDragStart(e) {
     // 2. set the dragging state for current sprite
     this.dragging = true;
     this.zIndex = 1;
+
+    // play sound
+    this.sound.play("clickSound");
 }
 
 export function onMouseMove(e) {
@@ -39,4 +42,5 @@ export function onMouseMove(e) {
     const newX = x + offsetX;
     const newY = y + offsetY;
     this.position.set(newX, newY);
+
 }
