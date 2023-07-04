@@ -42,5 +42,4 @@ export function onMouseMove(e) {
     const newX = x + offsetX;
     const newY = y + offsetY;
     this.position.set(newX, newY);
-
 }
